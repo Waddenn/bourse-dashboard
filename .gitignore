@@ -1,2 +1,4 @@
 .venv
 shell.nix
+Dockerfile
+requirements.txt

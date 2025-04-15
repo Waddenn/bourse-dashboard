@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Bourse</title>
+  <!-- Actualisation automatique toutes les 60 secondes -->
+  <meta http-equiv="refresh" content="60">
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    h1 { margin-bottom: 0; }
+    table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+    th, td { border: 1px solid #000; padding: 8px; text-align: center; }
+    th { background: #eee; }
+    td.red { color: red; }
+    .header { margin-bottom: 10px; }
+    .tables-container { display: flex; justify-content: space-between; margin-top: 30px; }
+    .table-wrapper { width: 48%; }
+  </style>
+</head>
+
+<body>
+  <div class="header">
+    <h1>Bourse</h1>
+    <p>
+      <strong>DATE :</strong> {{ now.split(' ')[0] }}<br>
+      <strong>Heure :</strong> {{ now }}
+    </p>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>TITRE</th>
+        <th>Veille</th>
+        <th>Ouverture</th>
+        <th>Bas</th>
+        <th>Haut</th>
+        <th>Spot</th>
+        <th>Volume</th>
+        <th>% Veille</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in data %}
+      <tr>
+        <td>
+          {{ row.Nom }}<br><small>{{ row.Heure }}</small>
+        </td>
+        <td>{{ row.Veille }}</td>
+        <td>{{ row.Ouverture }}</td>
+        <td>{{ row.Bas }}</td>
+        <td>{{ row.Haut }}</td>
+        <td>{{ row.Spot }}</td>
+        <td>{{ row.Volume }}</td>
+        <td class="{{ 'red' if '-' in row.Change else '' }}">{{ row.Change }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div class="tables-container">
+    <div class="table-wrapper">
+      <h3>Taux de Change</h3>
+      <table>
+        <thead>
+          <tr><th>Devise</th><th>Cours Bid</th><th>Cours Ask</th></tr>
+        </thead>
+        <tbody>
+          {% for fx in fx_rates %}
+          <tr>
+            <td>{{ fx.pair }}</td>
+            <td>{{ fx.bid }}</td>
+            <td>{{ fx.ask }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="table-wrapper">
+      <h3>Taux d’intérêt</h3>
+      <table>
+        <thead>
+          <tr><th>Échéance</th><th>EUR</th></tr>
+        </thead>
+        <tbody>
+          {% for rate in rates %}
+          <tr>
+            <td>{{ rate.label }}</td>
+            <td>{{ rate.value }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>
