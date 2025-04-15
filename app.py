@@ -96,6 +96,8 @@ TEMPLATE = """
     th { background: #eee; }
     td.red { color: red; }
     .header { margin-bottom: 10px; }
+    .tables-container { display: flex; justify-content: space-between; margin-top: 30px; }
+    .table-wrapper { width: 48%; }
   </style>
 </head>
 <body>
@@ -134,39 +136,41 @@ TEMPLATE = """
       {% endfor %}
     </tbody>
   </table>
-  <!-- TAUX DE CHANGE -->
-<h3 style="margin-top: 30px;">Taux de Change</h3>
-<table>
-  <thead>
-    <tr><th>Devise</th><th>Cours Bid</th><th>Cours Ask</th></tr>
-  </thead>
-  <tbody>
-    {% for fx in fx_rates %}
-    <tr>
-      <td>{{ fx.pair }}</td>
-      <td>{{ fx.bid }}</td>
-      <td>{{ fx.ask }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-
-<!-- TAUX D’INTÉRÊT -->
-<h3 style="margin-top: 30px;">Taux d’intérêt</h3>
-<table>
-  <thead>
-    <tr><th>Échéance</th><th>EUR</th></tr>
-  </thead>
-  <tbody>
-    {% for rate in rates %}
-    <tr>
-      <td>{{ rate.label }}</td>
-      <td>{{ rate.value }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-
+  <div class="tables-container">
+    <div class="table-wrapper">
+      <h3>Taux de Change</h3>
+      <table>
+        <thead>
+          <tr><th>Devise</th><th>Cours Bid</th><th>Cours Ask</th></tr>
+        </thead>
+        <tbody>
+          {% for fx in fx_rates %}
+          <tr>
+            <td>{{ fx.pair }}</td>
+            <td>{{ fx.bid }}</td>
+            <td>{{ fx.ask }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="table-wrapper">
+      <h3>Taux d’intérêt</h3>
+      <table>
+        <thead>
+          <tr><th>Échéance</th><th>EUR</th></tr>
+        </thead>
+        <tbody>
+          {% for rate in rates %}
+          <tr>
+            <td>{{ rate.label }}</td>
+            <td>{{ rate.value }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
 </body>
 </html>
 """
