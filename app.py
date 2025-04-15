@@ -1,11 +1,10 @@
-from flask import Flask, render_template_string
+from flask import Flask, render_template_string 
 import yfinance as yf
 import pandas as pd
 from datetime import datetime
 
 app = Flask(__name__)
 
-# Liste des tickers et noms
 TITLES = {
     'KER.PA': 'KERING',
     'MC.PA': 'LVMH',
@@ -45,11 +44,42 @@ def get_data():
         rows.append(data)
     return rows
 
+def get_fx_data():
+    pairs = {
+        'USD/EUR': 'USDEUR=X',
+        'USD/JPY': 'USDJPY=X',
+        'GBP/EUR': 'GBPEUR=X',
+        'EUR/JPY': 'EURJPY=X'
+    }
+    data = []
+    for label, ticker in pairs.items():
+        try:
+            info = yf.Ticker(ticker).info
+            data.append({
+                'pair': label,
+                'bid': round(info.get('bid', 0), 4),
+                'ask': round(info.get('ask', 0), 4)
+            })
+        except:
+            data.append({'pair': label, 'bid': '-', 'ask': '-'})
+    return data
+
+def get_interest_rates():
+    return [
+        {'label': 'JJ (Ester)', 'value': '2.417'},
+        {'label': 'EUR 1 M', 'value': '2.207'},
+        {'label': 'EUR 3 M', 'value': '2.263'},
+        {'label': 'EUR 6 M', 'value': '2.214'},
+        {'label': 'EUR 1 Y', 'value': '2.126'},
+    ]
+
 @app.route("/")
 def index():
     now = datetime.now().strftime('%d/%m/%Y %H:%M')
     data = get_data()
-    return render_template_string(TEMPLATE, data=data, now=now)
+    return render_template_string(TEMPLATE, data=data, now=now,
+                              fx_rates=get_fx_data(), rates=get_interest_rates())
+
 
 TEMPLATE = """
 <!DOCTYPE html>
@@ -104,6 +134,39 @@ TEMPLATE = """
       {% endfor %}
     </tbody>
   </table>
+  <!-- TAUX DE CHANGE -->
+<h3 style="margin-top: 30px;">Taux de Change</h3>
+<table>
+  <thead>
+    <tr><th>Devise</th><th>Cours Bid</th><th>Cours Ask</th></tr>
+  </thead>
+  <tbody>
+    {% for fx in fx_rates %}
+    <tr>
+      <td>{{ fx.pair }}</td>
+      <td>{{ fx.bid }}</td>
+      <td>{{ fx.ask }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!-- TAUX D’INTÉRÊT -->
+<h3 style="margin-top: 30px;">Taux d’intérêt</h3>
+<table>
+  <thead>
+    <tr><th>Échéance</th><th>EUR</th></tr>
+  </thead>
+  <tbody>
+    {% for rate in rates %}
+    <tr>
+      <td>{{ rate.label }}</td>
+      <td>{{ rate.value }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
 </body>
 </html>
 """
