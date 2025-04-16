@@ -2,3 +2,4 @@
 shell.nix
 Dockerfile
 requirements.txt
+__pycache__
