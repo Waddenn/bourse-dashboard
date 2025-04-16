@@ -32,6 +32,7 @@
       font-size: 2.2rem;
       color: #2563eb;
       letter-spacing: 2px;
+      padding-left: 12px; /* Décalage léger à droite */
     }
     .header .datetime {
       font-size: 1.1rem;
@@ -185,9 +186,54 @@
       color: #666;
       text-align: right;
     }
+    .market-closed-banner {
+      display: none;
+      background: #fee2e2;
+      color: #b91c1c;
+      text-align: center;
+      padding: 8px 0 7px 0;
+      font-size: 1.04rem;
+      font-weight: 500;
+      border-radius: 6px;
+      margin: 0 0 10px 0;
+      letter-spacing: 0.5px;
+      border: 1px solid #fecaca;
+    }
   </style>
 </head>
 <body>
+  {% macro market_row(row) -%}
+    <tr data-nom="{{ row.Nom }}">
+      <td>
+        <span style="font-weight:600">{{ row.Nom }}</span>
+        <br>
+        <small class="heure small">{{ row.Heure }}</small>
+      </td>
+      <td class="veille">{{ row.Veille }}</td>
+      <td class="ouverture">{{ row.Ouverture }}</td>
+      <td class="bas">{{ row.Bas }}</td>
+      <td class="haut">{{ row.Haut }}</td>
+      <td class="spot">{{ row.Spot }}</td>
+      <td class="volume">{{ row.Volume }}</td>
+      <td class="change {% if '-' in row.Change %}negative{% elif row.Change != 'Erreur' and row.Change != '-' and row.Change != '0.0%' %}positive{% endif %}">{{ row.Change }}</td>
+    </tr>
+  {%- endmacro %}
+
+  {% macro fx_row(fx) -%}
+    <tr data-pair="{{ fx.pair }}">
+      <td>{{ fx.pair }}</td>
+      <td class="bid">{{ fx.bid }}</td>
+      <td class="ask">{{ fx.ask }}</td>
+    </tr>
+  {%- endmacro %}
+
+  {% macro rate_row(rate) -%}
+    <tr>
+      <td>{{ rate.label }}</td>
+      <td>{{ rate.value }}</td>
+    </tr>
+  {%- endmacro %}
+
   <div class="container">
     <div class="header">
       <h1>Bourse</h1>
@@ -202,6 +248,9 @@
           Dernière mise à jour : <span id="last-update-value"></span>
         </span>
       </div>
+    </div>
+    <div class="market-closed-banner" id="market-closed-banner">
+      ⚠️ La bourse est actuellement fermée. Les données peuvent ne pas être à jour.
     </div>
     <div class="table-section">
       <div class="loader" id="loader"></div>
@@ -220,20 +269,7 @@
         </thead>
         <tbody id="market-table-body">
           {% for row in data %}
-          <tr data-nom="{{ row.Nom }}">
-            <td>
-              <span style="font-weight:600">{{ row.Nom }}</span>
-              <br>
-              <small class="heure small">{{ row.Heure }}</small>
-            </td>
-            <td class="veille">{{ row.Veille }}</td>
-            <td class="ouverture">{{ row.Ouverture }}</td>
-            <td class="bas">{{ row.Bas }}</td>
-            <td class="haut">{{ row.Haut }}</td>
-            <td class="spot">{{ row.Spot }}</td>
-            <td class="volume">{{ row.Volume }}</td>
-            <td class="change {% if '-' in row.Change %}negative{% elif row.Change != 'Erreur' and row.Change != '-' and row.Change != '0.0%' %}positive{% endif %}">{{ row.Change }}</td>
-          </tr>
+            {{ market_row(row) }}
           {% endfor %}
         </tbody>
       </table>
@@ -249,11 +285,7 @@
             </thead>
             <tbody id="fx-table-body">
               {% for fx in fx_rates %}
-              <tr data-pair="{{ fx.pair }}">
-                <td>{{ fx.pair }}</td>
-                <td class="bid">{{ fx.bid }}</td>
-                <td class="ask">{{ fx.ask }}</td>
-              </tr>
+                {{ fx_row(fx) }}
               {% endfor %}
             </tbody>
           </table>
@@ -267,10 +299,7 @@
           </thead>
           <tbody>
             {% for rate in rates %}
-            <tr>
-              <td>{{ rate.label }}</td>
-              <td>{{ rate.value }}</td>
-            </tr>
+              {{ rate_row(rate) }}
             {% endfor %}
           </tbody>
         </table>
@@ -364,6 +393,26 @@
       document.getElementById('heure').textContent = heureStr;
     }
 
+    function isMarketOpen() {
+      const now = new Date();
+      const day = now.getDay(); // 0 = dimanche, 6 = samedi
+      const hour = now.getHours();
+      const minute = now.getMinutes();
+      // Marché ouvert du lundi au vendredi, 9h00 à 17h30
+      if (day === 0 || day === 6) return false;
+      if (hour < 9 || (hour === 17 && minute > 30) || hour > 17) return false;
+      return true;
+    }
+
+    function updateMarketBanner() {
+      const banner = document.getElementById('market-closed-banner');
+      if (isMarketOpen()) {
+        banner.style.display = 'none';
+      } else {
+        banner.style.display = 'block';
+      }
+    }
+
     setInterval(() => {
       updateMarketData();
       updateFxData();
@@ -371,12 +420,14 @@
 
     setInterval(() => {
       updateNow();
+      updateMarketBanner();
     }, 1000);
 
     document.addEventListener('DOMContentLoaded', () => {
       updateMarketData();
       updateFxData();
       updateNow();
+      updateMarketBanner();
     });
   </script>
 </body>
