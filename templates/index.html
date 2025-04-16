@@ -13,9 +13,10 @@
       padding: 0;
     }
     .container {
-      max-width: 1200px;
+      width: 92%;
+      max-width: 1600px;
       margin: 30px auto;
-      padding: 24px 16px;
+      padding: 32px 28px;
       background: #fff;
       border-radius: 16px;
       box-shadow: 0 4px 24px rgba(0,0,0,0.07);
@@ -65,6 +66,7 @@
       border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      table-layout: auto;
     }
     th, td {
       padding: 10px 8px;
@@ -128,7 +130,8 @@
     }
     @media (max-width: 600px) {
       .container {
-        padding: 8px 2px;
+        width: 96%;
+        padding: 16px 12px;
       }
       .header {
         flex-direction: column;
@@ -137,6 +140,15 @@
       .header .datetime {
         margin-left: 0;
         margin-top: 8px;
+      }
+    }
+    @media (min-width: 1600px) {
+      .container {
+        width: 88%;
+        padding: 38px 32px;
+      }
+      th, td {
+        padding: 12px 10px;
       }
     }
     .small {
@@ -191,23 +203,23 @@
       background: #fee2e2;
       color: #b91c1c;
       text-align: center;
-      padding: 8px 0 7px 0;
+      padding: 12px 0;
       font-size: 1.04rem;
       font-weight: 500;
-      border-radius: 6px;
-      margin: 18px auto 10px auto;
+      border-radius: 8px;
+      margin: 0 0 24px 0;
       letter-spacing: 0.5px;
       border: 1px solid #fecaca;
-      max-width: 1100px;
-      width: 96vw;
+      width: 100%;
+      box-shadow: 0 2px 8px rgba(185, 28, 28, 0.08);
+    }
+    .market-closed-banner i {
+      margin-right: 6px;
     }
   </style>
 </head>
 <body>
   {% import 'macros.html' as macros %}
-  <div class="market-closed-banner" id="market-closed-banner">
-    ⚠️ La bourse est actuellement fermée. Les données peuvent ne pas être à jour.
-  </div>
   <div class="container">
     <div class="header">
       <h1>Bourse</h1>
@@ -223,9 +235,11 @@
         </span>
       </div>
     </div>
+    
     <div class="market-closed-banner" id="market-closed-banner">
-      ⚠️ La bourse est actuellement fermée. Les données peuvent ne pas être à jour.
+      <i class="fa">⚠️</i> La bourse est actuellement fermée. Les données peuvent ne pas être à jour.
     </div>
+    
     <div class="table-section">
       <div class="loader" id="loader"></div>
       <table>
