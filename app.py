@@ -40,6 +40,7 @@ INTEREST_RATES = [
 
 def fetch_yfinance_info(symbol):
     """Récupère les infos d'un ticker yfinance, gère les erreurs."""
+    logger.info(f"Appel à l'API Yahoo Finance pour le symbole : {symbol}")
     try:
         return yf.Ticker(symbol).info
     except Exception as e:

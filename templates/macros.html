@@ -1,0 +1,31 @@
+{% macro market_row(row) -%}
+  <tr data-nom="{{ row.Nom }}">
+    <td>
+      <span style="font-weight:600">{{ row.Nom }}</span>
+      <br>
+      <small class="heure small">{{ row.Heure }}</small>
+    </td>
+    <td class="veille">{{ row.Veille }}</td>
+    <td class="ouverture">{{ row.Ouverture }}</td>
+    <td class="bas">{{ row.Bas }}</td>
+    <td class="haut">{{ row.Haut }}</td>
+    <td class="spot">{{ row.Spot }}</td>
+    <td class="volume">{{ row.Volume }}</td>
+    <td class="change {% if '-' in row.Change %}negative{% elif row.Change != 'Erreur' and row.Change != '-' and row.Change != '0.0%' %}positive{% endif %}">{{ row.Change }}</td>
+  </tr>
+{%- endmacro %}
+
+{% macro fx_row(fx) -%}
+  <tr data-pair="{{ fx.pair }}">
+    <td>{{ fx.pair }}</td>
+    <td class="bid">{{ fx.bid }}</td>
+    <td class="ask">{{ fx.ask }}</td>
+  </tr>
+{%- endmacro %}
+
+{% macro rate_row(rate) -%}
+  <tr>
+    <td>{{ rate.label }}</td>
+    <td>{{ rate.value }}</td>
+  </tr>
+{%- endmacro %}

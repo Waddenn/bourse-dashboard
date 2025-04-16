@@ -195,45 +195,19 @@
       font-size: 1.04rem;
       font-weight: 500;
       border-radius: 6px;
-      margin: 0 0 10px 0;
+      margin: 18px auto 10px auto;
       letter-spacing: 0.5px;
       border: 1px solid #fecaca;
+      max-width: 1100px;
+      width: 96vw;
     }
   </style>
 </head>
 <body>
-  {% macro market_row(row) -%}
-    <tr data-nom="{{ row.Nom }}">
-      <td>
-        <span style="font-weight:600">{{ row.Nom }}</span>
-        <br>
-        <small class="heure small">{{ row.Heure }}</small>
-      </td>
-      <td class="veille">{{ row.Veille }}</td>
-      <td class="ouverture">{{ row.Ouverture }}</td>
-      <td class="bas">{{ row.Bas }}</td>
-      <td class="haut">{{ row.Haut }}</td>
-      <td class="spot">{{ row.Spot }}</td>
-      <td class="volume">{{ row.Volume }}</td>
-      <td class="change {% if '-' in row.Change %}negative{% elif row.Change != 'Erreur' and row.Change != '-' and row.Change != '0.0%' %}positive{% endif %}">{{ row.Change }}</td>
-    </tr>
-  {%- endmacro %}
-
-  {% macro fx_row(fx) -%}
-    <tr data-pair="{{ fx.pair }}">
-      <td>{{ fx.pair }}</td>
-      <td class="bid">{{ fx.bid }}</td>
-      <td class="ask">{{ fx.ask }}</td>
-    </tr>
-  {%- endmacro %}
-
-  {% macro rate_row(rate) -%}
-    <tr>
-      <td>{{ rate.label }}</td>
-      <td>{{ rate.value }}</td>
-    </tr>
-  {%- endmacro %}
-
+  {% import 'macros.html' as macros %}
+  <div class="market-closed-banner" id="market-closed-banner">
+    ⚠️ La bourse est actuellement fermée. Les données peuvent ne pas être à jour.
+  </div>
   <div class="container">
     <div class="header">
       <h1>Bourse</h1>
@@ -269,7 +243,7 @@
         </thead>
         <tbody id="market-table-body">
           {% for row in data %}
-            {{ market_row(row) }}
+            {{ macros.market_row(row) }}
           {% endfor %}
         </tbody>
       </table>
@@ -285,7 +259,7 @@
             </thead>
             <tbody id="fx-table-body">
               {% for fx in fx_rates %}
-                {{ fx_row(fx) }}
+                {{ macros.fx_row(fx) }}
               {% endfor %}
             </tbody>
           </table>
@@ -299,7 +273,7 @@
           </thead>
           <tbody>
             {% for rate in rates %}
-              {{ rate_row(rate) }}
+              {{ macros.rate_row(rate) }}
             {% endfor %}
           </tbody>
         </table>
@@ -431,4 +405,9 @@
     });
   </script>
 </body>
+<footer>
+  <div style="text-align:center; font-size:0.92em; color:#aaa; margin:18px 0 8px 0;">
+    Source des données : Yahoo Finance (<a href="https://finance.yahoo.com/" target="_blank" style="color:#aaa;text-decoration:underline dotted;">finance.yahoo.com</a>)
+  </div>
+</footer>
 </html>
