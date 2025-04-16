@@ -3,3 +3,4 @@ shell.nix
 Dockerfile
 requirements.txt
 __pycache__
+dump.rdb
