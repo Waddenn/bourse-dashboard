@@ -32,4 +32,4 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        tags: ghcr.io/${{ github.repository_owner }}/bourse-dashboard:latest
+        tags: ghcr.io/waddenn/bourse-dashboard:latest
