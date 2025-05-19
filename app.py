@@ -6,14 +6,13 @@ from flask import Flask, render_template, jsonify
 import yfinance as yf
 from flask_caching import Cache
 
-# Configuration de l'application Flask
 app = Flask(__name__)
 app.config['CACHE_TYPE'] = 'RedisCache'
 app.config['CACHE_REDIS_HOST'] = 'localhost'
 app.config['CACHE_REDIS_PORT'] = 6379
 app.config['CACHE_REDIS_DB'] = 0
 app.config['CACHE_REDIS_URL'] = 'redis://localhost:6379/0'
-app.config['CACHE_DEFAULT_TIMEOUT'] = 60
+app.config['CACHE_DEFAULT_TIMEOUT'] = 300
 cache = Cache(app)
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -39,13 +38,28 @@ INTEREST_RATES = [
 ]
 
 def fetch_yfinance_info(symbol):
-    """Récupère les infos d'un ticker yfinance, gère les erreurs."""
+    if not is_market_open():
+        logger.info(f"⏸️ Bourse fermée, pas d'appel API pour {symbol}")
+        return None
     logger.info(f"Appel à l'API Yahoo Finance pour le symbole : {symbol}")
     try:
         return yf.Ticker(symbol).info
     except Exception as e:
         logger.error("Erreur lors de la récupération de %s: %s", symbol, e)
         return None
+    
+def is_market_open():
+    now = datetime.now()
+    weekday = now.weekday()  # 0 = lundi, 6 = dimanche
+    hour = now.hour
+    minute = now.minute
+
+    # Marché ouvert du lundi au vendredi, de 9h00 à 17h30
+    if weekday >= 5:  # samedi (5) ou dimanche (6)
+        return False
+    if hour < 9 or (hour == 17 and minute > 30) or hour > 17:
+        return False
+    return True
 
 def build_ticker_row(symbol, name):
     """Construit une ligne de données pour un titre."""
@@ -63,11 +77,13 @@ def build_ticker_row(symbol, name):
             'Change': f"{round(info.get('regularMarketChangePercent', 0), 2)}%"
         }
     else:
+        status = 'Fermé' if not is_market_open() else 'Erreur'
         return {
-            'Nom': name, 'Heure': 'ERR',
+            'Nom': name, 'Heure': status,
             'Veille': '-', 'Ouverture': '-', 'Bas': '-', 'Haut': '-',
-            'Spot': '-', 'Volume': '-', 'Change': 'Erreur'
+            'Spot': '-', 'Volume': '-', 'Change': status
         }
+
 
 def build_fx_row(label, ticker):
     """Construit une ligne de données pour une paire FX."""
