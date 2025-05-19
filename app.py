@@ -37,17 +37,6 @@ INTEREST_RATES = [
     {'label': 'EUR 1 Y', 'value': '2.126'},
 ]
 
-def fetch_yfinance_info(symbol):
-    if not is_market_open():
-        logger.info(f"⏸️ Bourse fermée, pas d'appel API pour {symbol}")
-        return None
-    logger.info(f"Appel à l'API Yahoo Finance pour le symbole : {symbol}")
-    try:
-        return yf.Ticker(symbol).info
-    except Exception as e:
-        logger.error("Erreur lors de la récupération de %s: %s", symbol, e)
-        return None
-    
 def is_market_open():
     now = datetime.now()
     weekday = now.weekday()  # 0 = lundi, 6 = dimanche
@@ -60,6 +49,18 @@ def is_market_open():
     if hour < 9 or (hour == 17 and minute > 30) or hour > 17:
         return False
     return True
+
+def fetch_yfinance_info(symbol):
+    if not is_market_open():
+        logger.info(f"⏸️ Bourse fermée, pas d'appel API pour {symbol}")
+        return None
+    logger.info(f"Appel à l'API Yahoo Finance pour le symbole : {symbol}")
+    try:
+        return yf.Ticker(symbol).info
+    except Exception as e:
+        logger.error("Erreur lors de la récupération de %s: %s", symbol, e)
+        return None
+    
 
 def build_ticker_row(symbol, name):
     """Construit une ligne de données pour un titre."""
