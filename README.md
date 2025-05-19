@@ -1,4 +1,4 @@
-# 📈 Bourse Dashboard
+# 📈 Market Dashboard
 
 A lightweight financial dashboard built with Flask and Redis, powered by Yahoo Finance data.
 
