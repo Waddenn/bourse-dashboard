@@ -414,8 +414,10 @@
     }, 1000);
 
     document.addEventListener('DOMContentLoaded', () => {
-      updateMarketData();
-      updateFxData();
+      if (isMarketOpen()) {
+        updateMarketData();
+        updateFxData();
+      }
       updateNow();
       updateMarketBanner();
     });
