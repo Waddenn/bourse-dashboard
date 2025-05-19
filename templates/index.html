@@ -402,8 +402,10 @@
     }
 
     setInterval(() => {
-      updateMarketData();
-      updateFxData();
+      if (isMarketOpen()) {
+        updateMarketData();
+        updateFxData();
+      }
     }, 300000); 
 
     setInterval(() => {
